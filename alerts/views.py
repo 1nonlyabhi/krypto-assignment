@@ -11,9 +11,6 @@ from .serializers import AlertDetailSerializer, AlertSerializer
 # Create your views here.
 
 class AlertView(APIView):
-    """
-    List all Transformers, or create a new Transformer
-    """
   
     def post(self, request, format=None):
         serializer = AlertSerializer(data=request.data)
@@ -41,21 +38,22 @@ class AlertView(APIView):
 
   
 class AlertListView(APIView):
-    """
-    List all Transformers, or create a new Transformer
-    """
   
     def get(self, request, format=None):
-        alerts = Alert.objects.filter(holder = self.request.user)
-        serializer = AlertDetailSerializer(alerts, many=True)
+        status = self.request.query_params.get('status')
+        if status:
+            alerts = Alert.objects.filter(holder = self.request.user).filter(status = status)
+        else:
+            alerts = Alert.objects.filter(holder = self.request.user)
+        serializer = AlertSerializer(alerts, many=True)
         return Response(serializer.data)
   
-    def post(self, request, format=None):
-        serializer = AlertDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            alerts = Alert.objects.filter(holder = self.request.user).filter(status = request.data['status'])
-            serializer = AlertDetailSerializer(alerts, many=True)
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request, format=None):
+    #     serializer = AlertDetailSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         alerts = Alert.objects.filter(holder = self.request.user).filter(status = request.data['status'])
+    #         serializer = AlertDetailSerializer(alerts, many=True)
+    #         return Response(serializer.data,
+    #                         status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
