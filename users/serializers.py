@@ -10,8 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
         }
     
     def create(self, validated_data):
-        # password = validated_data.pop('password', None)
-        # if password is not None:
         user = User()
         user.set_password(validated_data['password'])
         validated_data['password'] = user.password
